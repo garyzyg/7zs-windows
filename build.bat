@@ -30,7 +30,7 @@ FOR %%L IN (makefile makefile_con) DO IF EXIST %%L (
 	) DO %%I "/%%~M/d" -i resource.rc
 
 	CALL :label %%L %%K
-	%BUILD_MAKE_PROGRAM% /f %%L clean CPU=%_BUILDARCH%
+	%BUILD_MAKE_PROGRAM% /f %%L clean PLATFORM=%Platform%
 )
 CD %%K
 
@@ -42,8 +42,8 @@ CD %%K
 GOTO :EOF
 
 :label
-%BUILD_MAKE_PROGRAM% /f %1 LFLAGS="/MANIFEST /MANIFESTUAC:level='requireAdministrator'" Include=%Include%;%CRT_INC_PATH%;%CD% CPU=%_BUILDARCH%
-FOR %%I IN (%_BUILDARCH%\*.sfx) DO (
+%BUILD_MAKE_PROGRAM% /f %1 LFLAGS="/MANIFEST /MANIFESTUAC:level='requireAdministrator'" Include=%Include%;%CRT_INC_PATH%;%CD% PLATFORM=%Platform% MY_DYNAMIC_LINK=1
+FOR %%I IN (%Platform%\*.sfx) DO (
 	"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\mt.exe" -manifest %%I.manifest -outputresource:%%I;1
 	MOVE %%I %2
 )
