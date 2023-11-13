@@ -7,6 +7,8 @@ IF %_BUILDARCH%==AMD64 SET Lib=%Lib%\Crt\amd64;%DDK_LIB_DEST%\amd64;%Lib%
 
 FOR %%I IN (C:\msys64\usr\bin\sed.exe) DO (
 
+%%I -e "$a #undef Z7_DESTRUCTOR_override" -e "$a #define Z7_DESTRUCTOR_override" -i CPP\Common\Common.h
+
 FOR %%J IN (CPP\Build.mak Build.mak) DO IF EXIST %%J (
 	%%I "1i CFLAGS = $(CFLAGS) -D_LZMA_SIZE_OPT /GL /GS-" -i %%J
 
