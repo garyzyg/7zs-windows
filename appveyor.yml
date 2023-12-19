@@ -1,0 +1,28 @@
+skip_non_tags: true
+platform:
+- x86
+- x64
+init:
+- cmd: IF %APPVEYOR_REPO_TAG%==true appveyor UpdateBuild -Version %APPVEYOR_REPO_TAG_NAME%-%APPVEYOR_BUILD_NUMBER%
+before_build:
+- cmd: >-
+    FOR %%I IN (%APPVEYOR_REPO_TAG_NAME:.=%) DO IF %%I GEQ 934	appveyor DownloadFile "https://master.dl.sourceforge.net/project/sevenzip/7-Zip/%APPVEYOR_REPO_TAG_NAME%/7z%%I-src.7z"
+
+    FOR %%I IN (%APPVEYOR_REPO_TAG_NAME:.=%) DO IF %%I LEQ 922	appveyor DownloadFile "https://master.dl.sourceforge.net/project/sevenzip/7-Zip/%APPVEYOR_REPO_TAG_NAME%/7z%%I.tar.bz2"
+
+    FOR %%I IN (*.7z *.bz2 *.tar) DO 7z x %%I
+build_script:
+- cmd: build.bat
+after_build:
+- cmd: 7z a 7zS-%Platform%.zip *.sfx
+artifacts:
+- path: '*.zip'
+  name: 7zS
+deploy:
+- provider: GitHub
+  tag: $(APPVEYOR_REPO_TAG_NAME)
+  auth_token:
+    secure: soIi78VdSI1IVuDssr3WJelwjSG02xOWjYdgYgOozxkxjDPoBalBV9FM5wr6dDCw
+  artifact: /.*\.zip/
+  on:
+    APPVEYOR_REPO_TAG: true
